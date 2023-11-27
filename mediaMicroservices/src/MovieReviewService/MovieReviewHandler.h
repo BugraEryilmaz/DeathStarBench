@@ -74,9 +74,9 @@ void MovieReviewHandler::UploadMovieReview(
   TextMapWriter writer(writer_text_map);
 
   // ─── Launch Timing ───────────────────────────────────────────
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan( "UploadMovieReview", {opentracing::ChildOf(parent_span->get())});
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan( "UploadMovieReview", {opentracing::ChildOf(parent_span->get())});
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
   // ─────────────────────────────────────────────────────────────
 
   // ─── Init Connection To Server ───────────────────────────────
@@ -124,17 +124,17 @@ void MovieReviewHandler::UploadMovieReview(
 
 
   // ─── Db Find Tracing ─────────────────────────────────────────
-  auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindMovie", {opentracing::ChildOf(&span->context())}); 
+  // auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindMovie", {opentracing::ChildOf(&span->context())}); 
 
   // Seleting a Movie
   cursor = mongoc_collection_find_with_opts(movies_collection, movie_doc, NULL, NULL);
 
-  find_span->Finish();
+  // find_span->Finish();
   // ─────────────────────────────────────────────────────────────
 
 
   // ─── Db Insert Tracing ───────────────────────────────────────
-  auto insert_span = opentracing::Tracer::Global()->StartSpan( "MongoMovieTotalInsert", {opentracing::ChildOf(&span->context())});
+  // auto insert_span = opentracing::Tracer::Global()->StartSpan( "MongoMovieTotalInsert", {opentracing::ChildOf(&span->context())});
 
   // ─── Adding The A Movie If Does Not Exist ─────────────────────
 
@@ -166,7 +166,7 @@ void MovieReviewHandler::UploadMovieReview(
   }
 
   // ─── Db Update Tracing ───────────────────────────────────────
-  auto update_span = opentracing::Tracer::Global()->StartSpan( "MongoMovieReviewInsert", {opentracing::ChildOf(&span->context())});
+  // auto update_span = opentracing::Tracer::Global()->StartSpan( "MongoMovieReviewInsert", {opentracing::ChildOf(&span->context())});
 
   // ─── Insert Review Id Anyway ─────────────────────────────────
 
@@ -185,8 +185,8 @@ void MovieReviewHandler::UploadMovieReview(
     throw se;
   }
   
-  update_span->Finish();
-  insert_span->Finish();
+  // update_span->Finish();
+  // insert_span->Finish();
   // ─────────────────────────────────────────────────────────────
 
   bson_destroy(movie_doc);
@@ -211,7 +211,7 @@ void MovieReviewHandler::UploadMovieReview(
     throw se;
   }
   auto redis_client = redis_client_wrapper->GetClient();
-  auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
+  // auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
 
   auto num_reviews = redis_client->zcard(movie_id);
   redis_client->sync_commit();
@@ -226,8 +226,8 @@ void MovieReviewHandler::UploadMovieReview(
   }
   
   _redis_client_pool->Push(redis_client_wrapper);
-  redis_span->Finish();
-  span->Finish();
+  // redis_span->Finish();
+  // span->Finish();
 
 }
 
@@ -237,9 +237,9 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan( "ReadMovieReviews", { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan( "ReadMovieReviews", { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
 
   if (stop <= start || start < 0) { return; }
@@ -258,10 +258,10 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
     throw se;
   }
   auto redis_client = redis_client_wrapper->GetClient();
-  auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisFind", {opentracing::ChildOf(&span->context())});
+  // auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisFind", {opentracing::ChildOf(&span->context())});
   auto review_ids_future = redis_client->zrevrange(movie_id, start, stop - 1);
   redis_client->commit();
-  redis_span->Finish();
+  // redis_span->Finish();
 
   cpp_redis::reply review_ids_reply;
   try {
@@ -355,12 +355,12 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
   size_t cursor_idx = 0; 
 
   // ─── Start Trace ─────────────────────────────────────────────    
-  auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindMovieReviews", {opentracing::ChildOf(&span->context())});
+  // auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindMovieReviews", {opentracing::ChildOf(&span->context())});
 
   // Run the find query
   cursor = mongoc_collection_find_with_opts(reviews_collection, movie_doc, opts, NULL);
 
-  find_span->Finish();
+  // find_span->Finish();
   // ─────────────────────────────────────────────────────────────
 
   // ─── Iterrate Over All Gathered Item Of The Collection ───────
@@ -417,7 +417,7 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
   }
 
 
-  find_span->Finish();
+  // find_span->Finish();
 
   bson_destroy(opts);
   bson_destroy(movie_doc);
@@ -463,12 +463,12 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
       throw se;
     }
     redis_client = redis_client_wrapper->GetClient();
-    auto redis_update_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
+    // auto redis_update_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
     redis_client->del(std::vector<std::string>{movie_id});
     std::vector<std::string> options{"NX"};
     zadd_reply_future = redis_client->zadd( movie_id, options, redis_update_map);
     redis_client->commit();
-    redis_update_span->Finish();
+    // redis_update_span->Finish();
   }
 
   try {
@@ -497,7 +497,7 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
     _redis_client_pool->Push(redis_client_wrapper);
   }
 
-  span->Finish();
+  // span->Finish();
   
 }
 

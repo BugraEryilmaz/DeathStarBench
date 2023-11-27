@@ -66,11 +66,11 @@ void MovieInfoHandler::WriteMovieInfo(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "WriteMovieInfo",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "WriteMovieInfo",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   bson_t *new_doc = bson_new();
   BSON_APPEND_UTF8(new_doc, "movie_id", movie_id.c_str());
@@ -144,11 +144,11 @@ void MovieInfoHandler::WriteMovieInfo(
     throw se;
   }
   bson_error_t error;
-  auto insert_span = opentracing::Tracer::Global()->StartSpan(
-      "MongoInsertMovieInfo", { opentracing::ChildOf(&span->context()) });
+  // auto insert_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MongoInsertMovieInfo", { opentracing::ChildOf(&span->context()) });
   bool plotinsert = mongoc_collection_insert_one (
       collection, new_doc, nullptr, nullptr, &error);
-  insert_span->Finish();
+  // insert_span->Finish();
   if (!plotinsert) {
     LOG(error) << "Error: Failed to insert movie-info to MongoDB: "
                << error.message;
@@ -165,7 +165,7 @@ void MovieInfoHandler::WriteMovieInfo(
   mongoc_collection_destroy(collection);
   mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
 
-  span->Finish();
+  // span->Finish();
 }
 
 void MovieInfoHandler::ReadMovieInfo(
@@ -178,11 +178,11 @@ void MovieInfoHandler::ReadMovieInfo(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "ReadMovieInfo",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "ReadMovieInfo",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
   
   memcached_return_t memcached_rc;
   memcached_st *memcached_client = memcached_pool_pop(
@@ -196,8 +196,8 @@ void MovieInfoHandler::ReadMovieInfo(
 
   size_t movie_info_mmc_size;
   uint32_t memcached_flags;
-  auto get_span = opentracing::Tracer::Global()->StartSpan(
-      "MmcGetMovieInfo", { opentracing::ChildOf(&span->context()) });
+  // auto get_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MmcGetMovieInfo", { opentracing::ChildOf(&span->context()) });
   char *movie_info_mmc = memcached_get(
       memcached_client,
       movie_id.c_str(),
@@ -213,7 +213,7 @@ void MovieInfoHandler::ReadMovieInfo(
     throw se;
   }
   memcached_pool_push(_memcached_client_pool, memcached_client);
-  get_span->Finish();
+  // get_span->Finish();
 
   if (movie_info_mmc) {
     LOG(debug) << "Get movie-info " << movie_id << " cache hit from Memcached";
@@ -263,13 +263,13 @@ void MovieInfoHandler::ReadMovieInfo(
     }
     bson_t *query = bson_new();
     BSON_APPEND_UTF8(query, "movie_id", movie_id.c_str());
-    auto find_span = opentracing::Tracer::Global()->StartSpan(
-        "MongoFindMovieInfo", { opentracing::ChildOf(&span->context()) });
+    // auto find_span = opentracing::Tracer::Global()->StartSpan(
+    //     "MongoFindMovieInfo", { opentracing::ChildOf(&span->context()) });
     mongoc_cursor_t *cursor = mongoc_collection_find_with_opts(
         collection, query, nullptr, nullptr);
     const bson_t *doc;
     bool found = mongoc_cursor_next(cursor, &doc);
-    find_span->Finish();
+    // find_span->Finish();
     if (!found) {
       bson_error_t error;
       if (mongoc_cursor_error (cursor, &error)) {
@@ -332,8 +332,8 @@ void MovieInfoHandler::ReadMovieInfo(
         se.message = "Failed to pop a client from memcached pool";
         throw se;
       }
-      auto set_span = opentracing::Tracer::Global()->StartSpan(
-          "MmcSetMovieInfo", { opentracing::ChildOf(&span->context()) });
+      // auto set_span = opentracing::Tracer::Global()->StartSpan(
+      //     "MmcSetMovieInfo", { opentracing::ChildOf(&span->context()) });
 
       memcached_rc = memcached_set(
           memcached_client,
@@ -347,12 +347,12 @@ void MovieInfoHandler::ReadMovieInfo(
         LOG(warning) << "Failed to set movie_info to Memcached: "
                      << memcached_strerror(memcached_client, memcached_rc);
       }
-      set_span->Finish();
+      // set_span->Finish();
       bson_free(movie_info_json_char);
       memcached_pool_push(_memcached_client_pool, memcached_client);
     }
   }
-  span->Finish();
+  // span->Finish();
 }
 
 void MovieInfoHandler::UpdateRating(
@@ -363,11 +363,11 @@ void MovieInfoHandler::UpdateRating(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UpdateRating",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UpdateRating",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   bson_t *query = bson_new();
   BSON_APPEND_UTF8(query, "movie_id", movie_id.c_str());
@@ -389,8 +389,8 @@ void MovieInfoHandler::UpdateRating(
     mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
     throw se;
   }
-  auto find_span = opentracing::Tracer::Global()->StartSpan(
-      "MongoFindMovieInfo", {opentracing::ChildOf(&span->context())});
+  // auto find_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MongoFindMovieInfo", {opentracing::ChildOf(&span->context())});
   mongoc_cursor_t *cursor = mongoc_collection_find_with_opts(
       collection, query, nullptr, nullptr);
   const bson_t *doc;
@@ -417,8 +417,8 @@ void MovieInfoHandler::UpdateRating(
           "num_rating", BCON_INT32(num_rating), "}");
       bson_error_t error;
       bson_t reply;
-      auto update_span = opentracing::Tracer::Global()->StartSpan(
-          "MongoUpdateRating", {opentracing::ChildOf(&span->context())});
+      // auto update_span = opentracing::Tracer::Global()->StartSpan(
+      //     "MongoUpdateRating", {opentracing::ChildOf(&span->context())});
       bool updated = mongoc_collection_find_and_modify(
           collection,
           query,
@@ -443,12 +443,12 @@ void MovieInfoHandler::UpdateRating(
         mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
         throw se;
       }
-      update_span->Finish();
+      // update_span->Finish();
     }
   }
 
-  auto delete_span = opentracing::Tracer::Global()->StartSpan(
-      "MmcDelete", {opentracing::ChildOf(&span->context())});
+  // auto delete_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MmcDelete", {opentracing::ChildOf(&span->context())});
   memcached_return_t memcached_rc;
   memcached_st *memcached_client = memcached_pool_pop(
       _memcached_client_pool, true, &memcached_rc);
@@ -460,9 +460,9 @@ void MovieInfoHandler::UpdateRating(
   }
   memcached_delete(memcached_client, movie_id.c_str(), movie_id.length(), 0);
   memcached_pool_push(_memcached_client_pool, memcached_client);
-  delete_span->Finish();
+  // delete_span->Finish();
 
-  span->Finish();
+  // span->Finish();
 }
 
 } // namespace media_service

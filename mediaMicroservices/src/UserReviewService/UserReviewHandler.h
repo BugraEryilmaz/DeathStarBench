@@ -67,9 +67,9 @@ namespace media_service
     TextMapWriter writer(writer_text_map);
     
     // ─── Launch Timing ───────────────────────────────────────────
-    auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-    auto span = opentracing::Tracer::Global()->StartSpan( "UploadUserReview", {opentracing::ChildOf(parent_span->get())});
-    opentracing::Tracer::Global()->Inject(span->context(), writer);
+    // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+    // auto span = opentracing::Tracer::Global()->StartSpan( "UploadUserReview", {opentracing::ChildOf(parent_span->get())});
+    // opentracing::Tracer::Global()->Inject(span->context(), writer);
     // ─────────────────────────────────────────────────────────────
 
     
@@ -118,17 +118,17 @@ namespace media_service
 
 
     // ─── Db Find Tracing ─────────────────────────────────────────
-    auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindUser", {opentracing::ChildOf(&span->context())}); 
+    // auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindUser", {opentracing::ChildOf(&span->context())}); 
 
     // Seleting a user
     cursor = mongoc_collection_find_with_opts(users_collection, user_doc, NULL, NULL);
 
-    find_span->Finish();
+    // find_span->Finish();
     // ─────────────────────────────────────────────────────────────
 
   
     // ─── Db Insert Tracing ───────────────────────────────────────
-    auto insert_span = opentracing::Tracer::Global()->StartSpan( "MongoTotalInsert", {opentracing::ChildOf(&span->context())});
+    // auto insert_span = opentracing::Tracer::Global()->StartSpan( "MongoTotalInsert", {opentracing::ChildOf(&span->context())});
 
     // ─── Adding The A User If Does Not Exist ─────────────────────
 
@@ -160,7 +160,7 @@ namespace media_service
     }
 
     // ─── Db Update Tracing ───────────────────────────────────────
-    auto update_span = opentracing::Tracer::Global()->StartSpan( "MongoReviewInsert", {opentracing::ChildOf(&span->context())});
+    // auto update_span = opentracing::Tracer::Global()->StartSpan( "MongoReviewInsert", {opentracing::ChildOf(&span->context())});
 
     // ─── Insert Review Id Anyway ─────────────────────────────────
 
@@ -179,8 +179,8 @@ namespace media_service
       throw se;
     }
     
-    update_span->Finish();
-    insert_span->Finish();
+    // update_span->Finish();
+    // insert_span->Finish();
     // ─────────────────────────────────────────────────────────────
 
     bson_destroy(user_doc);
@@ -204,7 +204,7 @@ namespace media_service
     auto redis_client = redis_client_wrapper->GetClient();
 
     // ─── Redis Timing ────────────────────────────────────────────
-    auto redis_span = opentracing::Tracer::Global()->StartSpan("RedisUpdate", {opentracing::ChildOf(&span->context())});
+    // auto redis_span = opentracing::Tracer::Global()->StartSpan("RedisUpdate", {opentracing::ChildOf(&span->context())});
     // ─────────────────────────────────────────────────────────────
 
     // ─── Sync Redis I Guess ──────────────────────────────────────
@@ -223,12 +223,12 @@ namespace media_service
     _redis_client_pool->Push(redis_client_wrapper);
 
     // ─── Stop Timer ──────────────────────────────────────────────
-    redis_span->Finish();
+    // redis_span->Finish();
 
     // DO NOT FORGET TO FREE RESSOURCES
     // redis ?
 
-    span->Finish();
+    // span->Finish();
     // ─────────────────────────────────────────────────────────────
 
 
@@ -250,9 +250,9 @@ namespace media_service
     TextMapWriter writer(writer_text_map);
     
     // ─── Launch Timing ───────────────────────────────────────────
-    auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-    auto span = opentracing::Tracer::Global()->StartSpan( "ReadUserReviews", {opentracing::ChildOf(parent_span->get())}); 
-    opentracing::Tracer::Global()->Inject(span->context(), writer);
+    // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+    // auto span = opentracing::Tracer::Global()->StartSpan( "ReadUserReviews", {opentracing::ChildOf(parent_span->get())}); 
+    // opentracing::Tracer::Global()->Inject(span->context(), writer);
     // ─────────────────────────────────────────────────────────────
 
     // Early return if index does not fall into expected range
@@ -271,10 +271,10 @@ namespace media_service
     }
 
     auto redis_client = redis_client_wrapper->GetClient();
-    auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisFind", {opentracing::ChildOf(&span->context())});
+    // auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisFind", {opentracing::ChildOf(&span->context())});
     auto review_ids_future = redis_client->zrevrange( std::to_string(user_id), start, stop - 1);
     redis_client->commit();
-    redis_span->Finish();
+    // redis_span->Finish();
 
     cpp_redis::reply review_ids_reply;
     try
@@ -379,12 +379,12 @@ namespace media_service
     size_t cursor_idx = 0; 
 
     // ─── Start Trace ─────────────────────────────────────────────    
-    auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindUserReviews", {opentracing::ChildOf(&span->context())});
+    // auto find_span = opentracing::Tracer::Global()->StartSpan( "MongoFindUserReviews", {opentracing::ChildOf(&span->context())});
 
     // Run the find query
     cursor = mongoc_collection_find_with_opts(reviews_collection, user_doc, opts, NULL);
 
-    find_span->Finish();
+    // find_span->Finish();
     // ─────────────────────────────────────────────────────────────
 
     // ─── Iterrate Over All Gathered Item Of The Collection ───────
@@ -442,7 +442,7 @@ namespace media_service
     }
 
 
-    find_span->Finish();
+    // find_span->Finish();
 
     bson_destroy(opts);
     bson_destroy(user_doc);
@@ -498,7 +498,7 @@ namespace media_service
       }
 
       redis_client = redis_client_wrapper->GetClient();
-      auto redis_update_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
+      // auto redis_update_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
       
       redis_client->del(std::vector<std::string>{std::to_string(user_id)});
       std::vector<std::string> options{"NX"};
@@ -506,7 +506,7 @@ namespace media_service
       
       redis_client->commit();
       
-      redis_update_span->Finish();
+      // redis_update_span->Finish();
     }
 
     try
@@ -546,7 +546,7 @@ namespace media_service
       _redis_client_pool->Push(redis_client_wrapper);
     }
 
-    span->Finish();
+    // span->Finish();
   }
 
 } // namespace media_service

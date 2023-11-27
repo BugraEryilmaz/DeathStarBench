@@ -38,11 +38,11 @@ void TextHandler::UploadText(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadText",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadText",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   auto compose_client_wrapper = _compose_client_pool->Pop();
   if (!compose_client_wrapper) {
@@ -61,7 +61,7 @@ void TextHandler::UploadText(
   }
   _compose_client_pool->Push(compose_client_wrapper);
 
-  span->Finish();
+  // span->Finish();
 }
 
 } //namespace media_service

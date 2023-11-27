@@ -52,14 +52,14 @@ void CastInfoHandler::WriteCastInfo(
     const std::string &intro,
     const std::map<std::string, std::string> &carrier) {
   // Initialize a span
-  TextMapReader reader(carrier);
-  std::map<std::string, std::string> writer_text_map;
-  TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "WriteCastInfo",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // TextMapReader reader(carrier);
+  // std::map<std::string, std::string> writer_text_map;
+  // TextMapWriter writer(writer_text_map);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "WriteCastInfo",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   bson_t *new_doc = bson_new();
   BSON_APPEND_INT64(new_doc, "cast_info_id", cast_info_id);
@@ -86,11 +86,11 @@ void CastInfoHandler::WriteCastInfo(
   }
 
   bson_error_t error;
-  auto insert_span = opentracing::Tracer::Global()->StartSpan(
-      "MongoInsertCastInfo", { opentracing::ChildOf(&span->context()) });
+  // auto insert_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MongoInsertCastInfo", { opentracing::ChildOf(&span->context()) });
   bool plotinsert = mongoc_collection_insert_one (
       collection, new_doc, nullptr, nullptr, &error);
-  insert_span->Finish();
+  // insert_span->Finish();
   if (!plotinsert) {
     LOG(error) << "Error: Failed to insert cast-info to MongoDB: "
                << error.message;
@@ -107,7 +107,7 @@ void CastInfoHandler::WriteCastInfo(
   mongoc_collection_destroy(collection);
   mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
 
-  span->Finish();
+  // span->Finish();
 }
 
 void CastInfoHandler::ReadCastInfo(
@@ -117,14 +117,14 @@ void CastInfoHandler::ReadCastInfo(
     const std::map<std::string, std::string> &carrier) {
 
   // Initialize a span
-  TextMapReader reader(carrier);
-  std::map<std::string, std::string> writer_text_map;
-  TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "ReadCastInfo",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // TextMapReader reader(carrier);
+  // std::map<std::string, std::string> writer_text_map;
+  // TextMapWriter writer(writer_text_map);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "ReadCastInfo",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   if (cast_info_ids.empty()) {
     return;
@@ -176,8 +176,8 @@ void CastInfoHandler::ReadCastInfo(
   char *return_value;
   size_t return_value_length;
   uint32_t flags;
-  auto get_span = opentracing::Tracer::Global()->StartSpan(
-      "MmcMgetCastInfo", { opentracing::ChildOf(&span->context()) });
+  // auto get_span = opentracing::Tracer::Global()->StartSpan(
+  //     "MmcMgetCastInfo", { opentracing::ChildOf(&span->context()) });
   while (true) {
     return_value = memcached_fetch(memcached_client, return_key,
         &return_key_length, &return_value_length, &flags, &memcached_rc);
@@ -206,7 +206,7 @@ void CastInfoHandler::ReadCastInfo(
     cast_info_ids_not_cached.erase(new_cast_info.cast_info_id);
     free(return_value);
   }
-  get_span->Finish();
+  // get_span->Finish();
   memcached_quit(memcached_client);
   memcached_pool_push(_memcached_client_pool, memcached_client);
   for (int i = 0; i < cast_info_ids.size(); ++i) {
@@ -258,8 +258,8 @@ void CastInfoHandler::ReadCastInfo(
         collection, query, nullptr, nullptr);
     const bson_t *doc;
 
-    auto find_span = opentracing::Tracer::Global()->StartSpan(
-        "MongoFindCastInfo", {opentracing::ChildOf(&span->context())});
+    // auto find_span = opentracing::Tracer::Global()->StartSpan(
+    //     "MongoFindCastInfo", {opentracing::ChildOf(&span->context())});
 
     while (true) {
       bool found = mongoc_cursor_next(cursor, &doc);
@@ -279,7 +279,7 @@ void CastInfoHandler::ReadCastInfo(
       return_map.insert({new_cast_info.cast_info_id, new_cast_info});
       bson_free(cast_info_json_char);
     }
-    find_span->Finish();
+    // find_span->Finish();
     bson_error_t error;
     if (mongoc_cursor_error(cursor, &error)) {
       LOG(warning) << error.message;
@@ -309,8 +309,8 @@ void CastInfoHandler::ReadCastInfo(
         se.message = "Failed to pop a client from memcached pool";
         throw se;
       }
-      auto set_span = opentracing::Tracer::Global()->StartSpan(
-          "MmcSetCastInfo", {opentracing::ChildOf(&span->context())});
+      // auto set_span = opentracing::Tracer::Global()->StartSpan(
+      //     "MmcSetCastInfo", {opentracing::ChildOf(&span->context())});
       for (auto & it : cast_info_json_map) {
         std::string id_str = std::to_string(it.first);
         _rc = memcached_set(
@@ -323,7 +323,7 @@ void CastInfoHandler::ReadCastInfo(
             static_cast<uint32_t>(0));
       }
       memcached_pool_push(_memcached_client_pool, _memcached_client);
-      set_span->Finish();
+      // set_span->Finish();
     }));
   }
 

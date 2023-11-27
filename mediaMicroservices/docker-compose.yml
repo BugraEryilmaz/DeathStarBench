@@ -10,7 +10,7 @@ services:
       - /etc/resolv.conf:/etc/resolv.conf
 
   unique-id-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "1"
     hostname: unique-id-service
     #    ports:
@@ -19,7 +19,7 @@ services:
     entrypoint: UniqueIdService
 
   movie-id-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "2-3"
     hostname: movie-id-service
     #    ports:
@@ -44,7 +44,7 @@ services:
     restart: always
 
   text-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "8-12"
     hostname: text-service
     #    ports:
@@ -53,7 +53,7 @@ services:
     entrypoint: TextService
 
   rating-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "4"
     hostname: rating-service
     #    ports:
@@ -70,7 +70,7 @@ services:
     restart: always
 
   user-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "8-12"
     hostname: user-service
     #    ports:
@@ -95,7 +95,7 @@ services:
     restart: always
 
   compose-review-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "13-16"
     hostname: compose-review-service
     #    ports:
@@ -114,7 +114,7 @@ services:
     restart: always
 
   review-storage-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "8-12"
     hostname: review-storage-service
     #    ports:
@@ -139,7 +139,7 @@ services:
     restart: always
 
   user-review-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "19"
     hostname: user-review-service
     #    ports:
@@ -164,7 +164,7 @@ services:
     restart: always
 
   movie-review-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "5"
     hostname: movie-review-service
     #    ports:
@@ -202,7 +202,7 @@ services:
       - ./gen-lua:/gen-lua
 
   cast-info-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "8-12"
     hostname: cast-info-service
     #    ports:
@@ -227,7 +227,7 @@ services:
     restart: always
 
   plot-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "8-12"
     hostname: plot-service
     #    ports:
@@ -252,7 +252,7 @@ services:
     restart: always
 
   movie-info-service:
-    image: yg397/media-microservices
+    image: abdu1998a/media-microservices:nospan
     cpuset: "22-24"
     hostname: movie-info-service
     #    ports:

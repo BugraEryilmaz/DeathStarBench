@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t yg397/media-microservices .
+docker build -t abdu1998a/media-microservices:nospan .

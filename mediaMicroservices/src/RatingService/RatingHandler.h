@@ -46,11 +46,11 @@ void RatingHandler::UploadRating(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadRating",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadRating",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   std::future<void> upload_future;
   std::future<void> redis_future;
@@ -83,12 +83,12 @@ void RatingHandler::UploadRating(
       throw se;
     }
     auto redis_client = redis_client_wrapper->GetClient();
-    auto redis_span = opentracing::Tracer::Global()->StartSpan(
-        "RedisInsert", {opentracing::ChildOf(&span->context())});
+    // auto redis_span = opentracing::Tracer::Global()->StartSpan(
+    //     "RedisInsert", {opentracing::ChildOf(&span->context())});
     redis_client->incrby(movie_id + ":uncommit_sum", rating);
     redis_client->incr(movie_id + ":uncommit_num");
     redis_client->sync_commit();
-    redis_span->Finish();
+    // redis_span->Finish();
     _redis_client_pool->Push(redis_client_wrapper);
   });
 
@@ -105,7 +105,7 @@ void RatingHandler::UploadRating(
     LOG(error) << "Failed to update rating to rating-redis";
     throw;
   }
-  span->Finish();
+  // span->Finish();
 }
 
 

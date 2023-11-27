@@ -11,7 +11,7 @@ else
     name=$1
 fi
 
-sudo ./remote-perf-https-multicore-x86.sh 1 24
+sudo ./remote-perf-https-multicore-x86 1 24
 
 # move results to results folder
 mkdir -p results

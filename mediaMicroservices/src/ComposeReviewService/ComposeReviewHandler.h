@@ -260,11 +260,11 @@ void ComposeReviewHandler::UploadMovieId(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadMovieId",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadMovieId",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   memcached_return_t memcached_rc;
   std::string key_counter = std::to_string(req_id) + ":counter";
@@ -357,7 +357,7 @@ void ComposeReviewHandler::UploadMovieId(
   if (counter_value == NUM_COMPONENTS) {
     _ComposeAndUpload(req_id, writer_text_map);
   }
-  span->Finish();
+  // span->Finish();
 }
 
 void ComposeReviewHandler::UploadUserId(
@@ -368,11 +368,11 @@ void ComposeReviewHandler::UploadUserId(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadUserId",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadUserId",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   memcached_return_t memcached_rc;
   std::string key_counter = std::to_string(req_id) + ":counter";
@@ -467,7 +467,7 @@ void ComposeReviewHandler::UploadUserId(
   if (counter_value == NUM_COMPONENTS) {
     _ComposeAndUpload(req_id, writer_text_map);
   }
-  span->Finish();
+  // span->Finish();
 }
 
 void ComposeReviewHandler::UploadUniqueId(
@@ -478,11 +478,11 @@ void ComposeReviewHandler::UploadUniqueId(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadUniqueId",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadUniqueId",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   memcached_return_t memcached_rc;
   std::string key_counter = std::to_string(req_id) + ":counter";
@@ -578,7 +578,7 @@ void ComposeReviewHandler::UploadUniqueId(
   if (counter_value == NUM_COMPONENTS) {
     _ComposeAndUpload(req_id, writer_text_map);
   }
-  span->Finish();
+  // span->Finish();
 }
 
 void ComposeReviewHandler::UploadText(
@@ -590,11 +590,11 @@ void ComposeReviewHandler::UploadText(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadText",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadText",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   memcached_return_t memcached_rc;
   std::string key_counter = std::to_string(req_id) + ":counter";
@@ -686,7 +686,7 @@ void ComposeReviewHandler::UploadText(
   if (counter_value == NUM_COMPONENTS) {
     _ComposeAndUpload(req_id, writer_text_map);
   }
-  span->Finish();
+  // span->Finish();
 }
 
 void ComposeReviewHandler::UploadRating(
@@ -696,11 +696,11 @@ void ComposeReviewHandler::UploadRating(
   TextMapReader reader(carrier);
   std::map<std::string, std::string> writer_text_map;
   TextMapWriter writer(writer_text_map);
-  auto parent_span = opentracing::Tracer::Global()->Extract(reader);
-  auto span = opentracing::Tracer::Global()->StartSpan(
-      "UploadRating",
-      { opentracing::ChildOf(parent_span->get()) });
-  opentracing::Tracer::Global()->Inject(span->context(), writer);
+  // auto parent_span = opentracing::Tracer::Global()->Extract(reader);
+  // auto span = opentracing::Tracer::Global()->StartSpan(
+  //     "UploadRating",
+  //     { opentracing::ChildOf(parent_span->get()) });
+  // opentracing::Tracer::Global()->Inject(span->context(), writer);
 
   memcached_return_t memcached_rc;
   std::string key_counter = std::to_string(req_id) + ":counter";
@@ -792,7 +792,7 @@ void ComposeReviewHandler::UploadRating(
   if (counter_value == NUM_COMPONENTS) {
     _ComposeAndUpload(req_id, writer_text_map);
   }
-  span->Finish();
+  // span->Finish();
 }
 
 } // namespace media_service
