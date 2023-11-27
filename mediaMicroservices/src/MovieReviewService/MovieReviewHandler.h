@@ -212,12 +212,16 @@ void MovieReviewHandler::UploadMovieReview(
   }
   auto redis_client = redis_client_wrapper->GetClient();
   auto redis_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
+
   auto num_reviews = redis_client->zcard(movie_id);
   redis_client->sync_commit();
   auto num_reviews_reply = num_reviews.get();
   std::vector<std::string> options{"NX"};
   if (num_reviews_reply.ok() && num_reviews_reply.as_integer())
-   
+  
+  _redis_client_pool->Push(redis_client_wrapper);
+  
+  redis_span->Finish();
   span->Finish();
 
 }
