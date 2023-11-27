@@ -102,10 +102,10 @@ void MovieReviewHandler::UploadMovieReview(
     se.errorCode = ErrorCode::SE_MONGODB_ERROR;
     se.message = "Failed to get access a collection from a MongoDB pool";
 
-    mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
 
     mongoc_collection_destroy(movies_collection);
     mongoc_collection_destroy(reviews_collection);
+    mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
     throw se;
   }
 
@@ -160,6 +160,8 @@ void MovieReviewHandler::UploadMovieReview(
         mongoc_collection_destroy(movies_collection);
         mongoc_collection_destroy(reviews_collection);
         mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
+
+        throw se;
       } 
   }
 
@@ -179,6 +181,8 @@ void MovieReviewHandler::UploadMovieReview(
     mongoc_collection_destroy(movies_collection);
     mongoc_collection_destroy(reviews_collection);
     mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
+
+    throw se;
   }
   
   update_span->Finish();
@@ -358,13 +362,39 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
     // Find in the BSON the entries we want
     if (bson_iter_init_find(&iter, doc_el, "review_id") && BSON_ITER_HOLDS_INT32(&iter)) 
       review_id = bson_iter_int32(&iter);
-    else
-      throw new ServiceException;
+    //! THIS SHOULD NEVER HAPPEND
+    else {
+
+      ServiceException se{};
+      se.errorCode = ErrorCode::SE_MONGODB_ERROR;
+      se.message = "Cannot read collection entry 'review_id'";
+
+      bson_destroy(opts);
+      bson_destroy(movie_doc);
+      mongoc_cursor_destroy(cursor);
+      mongoc_collection_destroy(reviews_collection);
+      mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
+      
+      throw se;
+    }
 
     if (bson_iter_find(&iter, "timestamp") && BSON_ITER_HOLDS_INT64(&iter)) 
       timestamp = bson_iter_int64(&iter);
-    else
-      throw new ServiceException;
+    //! THIS SHOULD NEVER HAPPEND
+    else {
+
+      ServiceException se{};
+      se.errorCode = ErrorCode::SE_MONGODB_ERROR;
+      se.message = "Cannot read collection entry 'timestamp'";
+
+      bson_destroy(opts);
+      bson_destroy(movie_doc);
+      mongoc_cursor_destroy(cursor);
+      mongoc_collection_destroy(reviews_collection);
+      mongoc_client_pool_push(_mongodb_client_pool, mongodb_client);
+      
+      throw se;
+    }
 
     //? If the position of the entries (index) are in certain range we add them
     //? to vectors/map that will be used to update Redis
