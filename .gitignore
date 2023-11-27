@@ -11,3 +11,4 @@ wrk2/wrk
 *.log
 *.csv
 *.xlsx
+mediaMicroservices/wrk2/scripts/media-microservices/compose-review-record.lua

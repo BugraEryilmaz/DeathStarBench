@@ -1,4 +1,3 @@
 cmake-build-debug-remote-host/*
 cmake-build-debug-remote/*
 wrk2/*
-wrk2/scripts/media-microservices/compose-review-record.lua
