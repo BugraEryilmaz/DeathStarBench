@@ -35,6 +35,9 @@ echo "save: $save"
 # if save flag is 1 then send save result flags in script 
 if [ $save -eq 1 ]
 then
+    echo "ip=$ip" > ./wrk2/scripts/media-microservices/compose-review-record.lua
+    cat ./wrk2/scripts/media-microservices/compose-review-record-base.lua >> ./wrk2/scripts/media-microservices/compose-review-record.lua
+
     ../wrk2/wrk -D exp -t $threads -c $connections -d $duration -L -s ./wrk2/scripts/media-microservices/compose-review-record.lua http://$ip:8080/wrk2-api/review/compose -R $rps
 
     curl http://$ip:9999/d

@@ -1,6 +1,5 @@
 counter = 0
 limit = 10000
-ip="10.89.3.2"
 
 math.randomseed(os.time())
 math.random(); math.random(); math.random()
