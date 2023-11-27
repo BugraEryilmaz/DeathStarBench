@@ -216,11 +216,16 @@ void MovieReviewHandler::UploadMovieReview(
   auto num_reviews = redis_client->zcard(movie_id);
   redis_client->sync_commit();
   auto num_reviews_reply = num_reviews.get();
+
   std::vector<std::string> options{"NX"};
-  if (num_reviews_reply.ok() && num_reviews_reply.as_integer())
+  if (num_reviews_reply.ok() && num_reviews_reply.as_integer()) 
+  {
+    std::multimap<std::string, std::string> value = {{ std::to_string(timestamp), std::to_string(review_id)}};
+    redis_client->zadd(movie_id, options, value);
+    redis_client->sync_commit();
+  }
   
   _redis_client_pool->Push(redis_client_wrapper);
-  
   redis_span->Finish();
   span->Finish();
 
@@ -266,9 +271,11 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
     _redis_client_pool->Push(redis_client_wrapper);
     throw;
   }
+
   _redis_client_pool->Push(redis_client_wrapper);
   std::vector<int64_t> review_ids;
   auto review_ids_reply_array = review_ids_reply.as_array();
+
   for (auto &review_id_reply : review_ids_reply_array) {
     review_ids.emplace_back(std::stoul(review_id_reply.as_string()));
   }
@@ -290,7 +297,7 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
 
   std::multimap<std::string, std::string> redis_update_map;
 
-  unsigned int mongo_start = start + review_ids.size();
+  int mongo_start = start + review_ids.size();
 
   // If the index are not broken
   if (mongo_start < stop)
@@ -435,8 +442,7 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
       std::vector<Review> _return_reviews;
       auto review_client = review_client_wrapper->GetClient();
       try {
-        review_client->ReadReviews(
-            _return_reviews, req_id, review_ids, writer_text_map);
+        review_client->ReadReviews( _return_reviews, req_id, review_ids, writer_text_map);
       } catch (...) {
         _review_client_pool->Push(review_client_wrapper);
         LOG(error) << "Failed to read review from review-storage-service";
@@ -457,12 +463,10 @@ void MovieReviewHandler::ReadMovieReviews( std::vector<Review> & _return, int64_
       throw se;
     }
     redis_client = redis_client_wrapper->GetClient();
-    auto redis_update_span = opentracing::Tracer::Global()->StartSpan(
-        "RedisUpdate", {opentracing::ChildOf(&span->context())});
+    auto redis_update_span = opentracing::Tracer::Global()->StartSpan( "RedisUpdate", {opentracing::ChildOf(&span->context())});
     redis_client->del(std::vector<std::string>{movie_id});
     std::vector<std::string> options{"NX"};
-    zadd_reply_future = redis_client->zadd(
-        movie_id, options, redis_update_map);
+    zadd_reply_future = redis_client->zadd( movie_id, options, redis_update_map);
     redis_client->commit();
     redis_update_span->Finish();
   }
