@@ -23,10 +23,10 @@ function _M.test()
   local carrier = {}
   tracer:text_map_inject(parent_context, carrier)
   local parent_context1 = tracer:text_map_extract(carrier)
-  local span = tracer:start_span("lua-hello", {["references"] = {{"child_of", parent_context1}}})
+  -- local span = tracer:start_span("lua-hello", {["references"] = {{"child_of", parent_context1}}})
   ngx.say("<p>hello, world</p>")
   ngx.say(dump(carrier))
-  span:finish()
+  -- span:finish()
 end
 
 return _M

@@ -16,10 +16,10 @@ function _M.RegisterMovie()
 
   local req_id = tonumber(string.sub(ngx.var.request_id, 0, 15), 16)
   local tracer = bridge_tracer.new_from_global()
-  local parent_span_context = tracer:binary_extract(ngx.var.opentracing_binary_context)
-  local span = tracer:start_span("RegisterMovie", {["references"] = {{"child_of", parent_span_context}}})
+  -- local parent_span_context = tracer:binary_extract(ngx.var.opentracing_binary_context)
+  -- local span = tracer:start_span("RegisterMovie", {["references"] = {{"child_of", parent_span_context}}})
   local carrier = {}
-  tracer:text_map_inject(span:context(), carrier)
+  -- tracer:text_map_inject(span:context(), carrier)
 
   ngx.req.read_body()
   local post = ngx.req.get_post_args()
@@ -36,7 +36,7 @@ function _M.RegisterMovie()
   client:RegisterMovieId(req_id, post.title, tostring(post.movie_id), carrier)
   GenericObjectPool:returnConnection(client)
 
-  span:finish()
+  -- span:finish()
 end
 
 return _M
