@@ -85,7 +85,13 @@ isolate cpu with:
 
 Disable smt:
 
-    echo off | sudo tee /sys/devices/system/cpu/smt/control
+    // echo off | sudo tee /sys/devices/system/cpu/smt/control
+    cd ~/resources/bios-lenovo/lib/python3.11/site-packages/
+    export PYTHONPATH=$PYTHONPATH:$(pwd)
+    python3 ~/resources/python-redfish-lenovo/examples/get_all_bios_attributes.py | grep Hyper
+    python3 ~/resources/python-redfish-lenovo/examples/set_bios_attribute.py --name Processors_HyperThreading --value Disabled
+    sudo reboot
+    cat /sys/devices/system/cpu/cpu1/topology/thread_siblings_list
 
 # Tune the benchmark
 
