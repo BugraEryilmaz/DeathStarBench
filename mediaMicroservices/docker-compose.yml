@@ -10,7 +10,7 @@ services:
       - /etc/resolv.conf:/etc/resolv.conf
 
   unique-id-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "19,83"
     hostname: unique-id-service
     #    ports:
@@ -19,7 +19,7 @@ services:
     entrypoint: UniqueIdService
 
   movie-id-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "17-18,81-82"
     hostname: movie-id-service
     #    ports:
@@ -44,7 +44,7 @@ services:
     restart: always
 
   text-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "12-15,76-79"
     hostname: text-service
     #    ports:
@@ -53,7 +53,7 @@ services:
     entrypoint: TextService
 
   rating-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "9-10,73-74"
     hostname: rating-service
     #    ports:
@@ -70,7 +70,7 @@ services:
     restart: always
 
   user-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "11,75"
     hostname: user-service
     #    ports:
@@ -95,7 +95,7 @@ services:
     restart: always
 
   compose-review-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "0-3,64-67"
     hostname: compose-review-service
     #    ports:
@@ -114,7 +114,7 @@ services:
     restart: always
 
   review-storage-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "4-7,68-71"
     hostname: review-storage-service
     #    ports:
@@ -139,7 +139,7 @@ services:
     restart: always
 
   user-review-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "8,72"
     hostname: user-review-service
     #    ports:
@@ -164,7 +164,7 @@ services:
     restart: always
 
   movie-review-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "16,80"
     hostname: movie-review-service
     #    ports:
@@ -189,7 +189,7 @@ services:
     restart: always
 
   nginx-web-server:
-    image: yg397/openresty-thrift:xenial
+    image: abdu1998a/openresty-thrift:xenial
     # cpuset: "4-7,68-71"
     hostname: nginx-thrift
     ports:
@@ -202,7 +202,7 @@ services:
       - ./gen-lua:/gen-lua
 
   cast-info-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "20-23,84-87"
     hostname: cast-info-service
     #    ports:
@@ -227,7 +227,7 @@ services:
     restart: always
 
   plot-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "12-15,76-79"
     hostname: plot-service
     #    ports:
@@ -252,7 +252,7 @@ services:
     restart: always
 
   movie-info-service:
-    image: abdu1998a/media-microservices:nospan
+    image: abdu1998a/media-microservices:nospanarm
     # cpuset: "20-23,84-87"
     hostname: movie-info-service
     #    ports:
