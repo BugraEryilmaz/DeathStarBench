@@ -803,7 +803,6 @@ static void socket_writeable(aeEventLoop *loop, int fd, void *data, int mask) {
         c->thread->sent ++;
 
         aeDeleteFileEvent(loop, fd, AE_WRITABLE);
-        aeCreateFileEvent(thread->loop, c->fd, AE_WRITABLE, socket_writeable, c);
     }
     return;
 
@@ -826,6 +825,9 @@ static void socket_readable(aeEventLoop *loop, int fd, void *data, int mask) {
         if (http_parser_execute(&c->parser, &parser_settings, c->buf, n) != n) goto error;
         c->thread->bytes += n;
     } while (n == RECVBUF && sock.readable(c) > 0);
+    
+    thread *thread = c->thread;
+    aeCreateFileEvent(thread->loop, c->fd, AE_WRITABLE, socket_writeable, c);
 
     return;
 
